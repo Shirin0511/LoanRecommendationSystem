@@ -4,7 +4,7 @@ import warnings
 
 warnings.filterwarnings('ignore')
 
-df= pd.read_csv('../data/accepted_2007_to_2018Q4.csv.gz',
+df= pd.read_csv('data/accepted_2007_to_2018Q4.csv.gz',
                 compression='gzip',
                 low_memory=False,
                 nrows=100000

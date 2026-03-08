@@ -89,3 +89,47 @@ print("\n=== FICO BY GRADE ===")
 print(df.groupby('grade')['fico_avg'].describe().round(2))
 
 
+#Plot-6 Loan Purpose Distribution
+
+purpose_counts = df['purpose'].value_counts()
+plt.figure(figsize=(10,5))
+sns.barplot(x=purpose_counts.index, y= purpose_counts.values, palette='viridis')
+plt.title('Loan Purpose Distribution')
+plt.xticks(rotation=45, ha='right')
+plt.xlabel('Purpose')
+plt.ylabel('Counts')
+plt.tight_layout()
+plt.savefig('src/plots/06_loan_purpose_dist.png')
+plt.show()
+print("\n=== LOAN PURPOSE ===")
+print(purpose_counts)
+
+#Plot -7 DTI by grade
+plt.figure(figsize=(10,5))
+sns.boxplot(x='grade', y='dti', data= df,
+            order=['A','B','C','D','E','F'], palette= 'RdYlGn_r')
+plt.title('DTI vs Grade')
+plt.xlabel('Grade')
+plt.ylabel('DTI')
+plt.tight_layout()
+plt.savefig('src/plots/07_dti_vs_grade.png')
+plt.show()
+
+
+#Plot-8 Correlation Heatmap
+num_cols = ['loan_amnt', 'int_rate', 'installment', 'annual_inc', 
+            'dti', 'fico_avg', 'open_acc', 'revol_bal', 'revol_util', 'total_acc']
+corr= df[num_cols].corr()
+sns.heatmap(corr, annot=True,fmt='.2f', cmap='coolwarm', 
+            square=True, linewidths=0.5)
+plt.title('Correlation HeatMap of Key Features')
+plt.tight_layout()
+plt.savefig('src/plots/08_correlation_heatmap.png')
+plt.show()
+print("\n=== CORRELATION WITH LOAN AMOUNT ===")
+print(corr['loan_amnt'].sort_values(ascending=False))
+
+
+print("\n EDA Complete!")
+
+

@@ -72,3 +72,20 @@ plt.ylabel('Loan Amount')
 plt.tight_layout()
 plt.savefig('src/plots/04_income_vs_loanamt.png')
 plt.show()
+
+#Plot-5 FICO score by Grade
+
+df['fico_avg'] = (df['fico_range_low'] + df['fico_range_high'])/2
+plt.figure(figsize=(10,5))
+sns.boxplot(x='grade', y='fico_avg', data=df,
+            palette='RdYlGn_r', order=['A','B','C','D','E','F'])
+plt.title('FICO Score by Grade')
+plt.xlabel('Grade')
+plt.ylabel('FICO Average')
+plt.tight_layout()
+plt.savefig('src/plots/05_fico_score_by_grade.png')
+plt.show()
+print("\n=== FICO BY GRADE ===")
+print(df.groupby('grade')['fico_avg'].describe().round(2))
+
+

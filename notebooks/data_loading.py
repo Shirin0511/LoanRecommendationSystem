@@ -12,7 +12,13 @@ df= pd.read_csv('data/accepted_2007_to_2018Q4.csv.gz',
 
 
 print(f"Shape: {df.shape}")
+print(f"Samples: ")
+print(df.sample(5))
+
 print(f"\nNumber of columns: {len(df.columns)}")
 print(f"\nFirst few columns: {df.columns[:10].tolist()}")
 print(f"\nMissing values (top 10):\n{df.isnull().sum().sort_values(ascending=False).head(10)}")
 print(f"\nData types:\n{df.dtypes.value_counts()}")
+
+df.head(1000).to_csv('data/sample.csv',index=False)
+print("Sample Saved!")

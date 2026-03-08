@@ -43,3 +43,32 @@ plt.savefig('src/plots/02_loan_amount_distribution.png')
 plt.show()
 print("\n=== LOAN AMOUNT STATS ===")
 print(df['loan_amnt'].describe())
+
+#Plot -3 Interest Rate by Grade
+df['int_rate'] = df['int_rate'].astype(str).str.replace('%','').astype(float)
+plt.figure(figsize=(10,5))
+sns.boxplot(x='grade',y='int_rate',data=df,
+            order=['A','B','C','D','E','F'], palette='RdYlGn_r')
+plt.title('Interest Rate by Grade')
+plt.xlabel('Grade')
+plt.ylabel('Interest Rate (%)')
+plt.tight_layout()
+plt.savefig('src/plots/03_Interest_rate_by_grade.png')
+plt.show()
+print("\n=== INTEREST RATE BY GRADE ===")
+print(df.groupby('grade')['int_rate'].describe().round(2))
+
+#Plot -4 Annual Income vs Loan Amount
+
+income_cap= df['annual_inc'].quantile(0.99)
+plot_df= df[df['annual_inc']<=income_cap]
+plt.figure(figsize=(10,5))
+sns.scatterplot(x='annual_inc',y='loan_amnt', hue='grade',
+                data=plot_df.sample(1000), alpha=0.5,
+                hue_order=['A','B','C','D','E','F'])
+plt.title('Annual Income Vs Loan Amount by Grade')
+plt.xlabel('Annual Income')
+plt.ylabel('Loan Amount')
+plt.tight_layout()
+plt.savefig('src/plots/04_income_vs_loanamt.png')
+plt.show()

@@ -62,10 +62,10 @@ print(df_new.isnull().sum())
 df_new['int_rate']= df_new['int_rate'].astype(str).str.replace('%','').astype(float)
 
 #changing the term to remove the months keyword from it and keeping only numeric value
-df_new['term'] = df_new['term'].astype(str).str.extract('(\d+)').astype(int)
+df_new['term'] = df_new['term'].astype(str).str.extract(r'(\d+)').astype(int)
 
 #Extracting only the numeric part from emp_length
-df_new['emp_length'] = df_new['emp_length'].astype(str).str.extract('(\d+)')
+df_new['emp_length'] = df_new['emp_length'].astype(str).str.extract(r'(\d+)')
 df_new['emp_length'] = pd.to_numeric(df_new['emp_length'], errors='coerce')
 df_new['emp_length'].fillna(df_new['emp_length'].median(), inplace=True)
 

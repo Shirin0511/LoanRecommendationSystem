@@ -116,3 +116,20 @@ num_features = ['loan_amnt', 'int_rate', 'annual_inc', 'dti',
 
 ss= StandardScaler()
 df_new[num_features] = ss.fit_transform(df_new[num_features]) 
+
+
+# 9. Applying Train Test Split
+
+X = df_new.drop(['grade','encoded_grade'], axis=1)
+y= df_new['encoded_grade']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size= 0.2, random_state=42, stratify = y)
+
+print(f"Shape of X_train: {X_train.shape}")
+print(f"Shape of X_test: {X_test.shape}")
+
+# Saving Processed Data
+X_train.to_csv('data/X_train.csv', index=False)
+X_test.to_csv('data/X_test.csv', index=False)
+y_train.to_csv('data/y_train.csv', index=False)
+y_test.to_csv('data/y_test.csv', index=False)

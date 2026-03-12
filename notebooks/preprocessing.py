@@ -13,7 +13,7 @@ df = pd.read_csv(
 )
 print(f" Data loaded: {df.shape}")
 
-# Selecting relevant features
+# 1. Selecting relevant features
 features=[
     'loan_amnt', 'term', 'int_rate', 'annual_inc', 'purpose',
     'dti', 'fico_range_low', 'fico_range_high', 'open_acc',
@@ -27,7 +27,7 @@ df_new = df[features].copy()
 print(f"Shape of new Dataframe: {df_new.shape}")
 print(f"Missing values: {df_new.isnull().sum()}")
 
-# Dropping redundant columns 
+# 2. Dropping redundant columns 
 
 df_new['fico_avg'] = (df_new['fico_range_low'] + df_new['fico_range_high'])/2
 
@@ -35,7 +35,7 @@ df_new.drop(['fico_range_high','fico_range_low','open_acc'],axis=1,inplace=True)
 
 print(f"Shape after dropping columns: {df_new.shape}")
 
-# Handling Missing Values
+# 3. Handling Missing Values
 missing_pct = (((df_new.isnull().sum())/len(df_new))*100).round(2)
 print(f"Missing Percentages: ", missing_pct[missing_pct>0])
 
@@ -56,18 +56,63 @@ for col in cat_cols:
 print(df_new.isnull().sum())    
 
 
-#Clean specific columns
+# 4. Clean specific columns
 
-#Changing int_rate to float and removing the % sign
+# Changing int_rate to float and removing the % sign
 df_new['int_rate']= df_new['int_rate'].astype(str).str.replace('%','').astype(float)
 
-#changing the term to remove the months keyword from it and keeping only numeric value
+# Changing the term to remove the months keyword from it and keeping only numeric value
 df_new['term'] = df_new['term'].astype(str).str.extract(r'(\d+)').astype(int)
 
-#Extracting only the numeric part from emp_length
+# Extracting only the numeric part from emp_length
 df_new['emp_length'] = df_new['emp_length'].astype(str).str.extract(r'(\d+)')
 df_new['emp_length'] = pd.to_numeric(df_new['emp_length'], errors='coerce')
 df_new['emp_length'].fillna(df_new['emp_length'].median(), inplace=True)
 
 print("Column Values after Cleaning:")
 print(df_new[['int_rate','term','emp_length']].head())
+
+# 5. Handling Outliers
+
+dti_cap = df_new['dti'].quantile(0.99)
+df_new['dti'] = df_new['dti'].clip(upper=dti_cap)
+
+inc_cap = df_new['annual_inc'].quantile(0.99)
+df_new['annual_inc'] = df_new['annual_inc'].clip(upper=inc_cap)
+
+revol_cap = df_new['revol_bal'].quantile(0.99)
+df_new['revol_bal'] = df_new['revol_bal'].clip(upper=revol_cap)
+
+print(f"DTI capped at: {dti_cap:.2f}")
+print(f"Income capped at: {inc_cap:.2f}")
+print(f"Revolution capped at: {revol_cap:.2f}")
+
+# 6. Applying Encoding on Purpose to group rare values as Others
+
+purpose_counts = df_new['purpose'].value_counts()
+rare_purpose = purpose_counts[purpose_counts<1000].index
+
+df_new['purpose'] = df_new['purpose'].apply(
+    lambda x: 'others' if x in rare_purpose else x
+)
+
+print(f"Purpose after rare encoding: {df_new['purpose'].value_counts()}")
+
+# 7. One Hot Encoding for Categorical Features & Label Encoding for Target 
+
+cat_cols = ['purpose','term','home_ownership']
+df_new = pd.get_dummies(df_new, columns=cat_cols, drop_first=True)
+
+le = LabelEncoder()
+df_new['encoded_grade'] = le.fit_transform(df_new['grade'])
+
+print(f'Shape after Encoding: {df_new.shape}')
+
+# 8. Feature Scaling
+
+num_features = ['loan_amnt', 'int_rate', 'annual_inc', 'dti',
+                'fico_avg', 'revol_bal', 'revol_util', 
+                'total_acc', 'emp_length']
+
+ss= StandardScaler()
+df_new[num_features] = ss.fit_transform(df_new[num_features]) 

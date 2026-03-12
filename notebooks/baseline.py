@@ -23,6 +23,8 @@ def rule_based_predictions(row):
     fico = row['fico_avg']
     dti = row['dti']
     int_rate = row['int_rate']
+    revol_util = row['revol_util']
+
 
     # Combine signals into a risk score
     # int_rate is the strongest signal from EDA

@@ -59,7 +59,7 @@ print(df_new.isnull().sum())
 # 4. Clean specific columns
 
 # Changing int_rate to float and removing the % sign
-df_new['int_rate']= df_new['int_rate'].astype(str).str.replace('%','').astype(float)
+#df_new['int_rate']= df_new['int_rate'].astype(str).str.replace('%','').astype(float)  # commented as this is turing into data leakage
 
 # Changing the term to remove the months keyword from it and keeping only numeric value
 df_new['term'] = df_new['term'].astype(str).str.extract(r'(\d+)').astype(int)
@@ -110,7 +110,7 @@ print(f'Shape after Encoding: {df_new.shape}')
 
 # 8. Feature Scaling
 
-num_features = ['loan_amnt', 'int_rate', 'annual_inc', 'dti',
+num_features = ['loan_amnt', 'annual_inc', 'dti',
                 'fico_avg', 'revol_bal', 'revol_util', 
                 'total_acc', 'emp_length']
 

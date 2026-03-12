@@ -22,24 +22,23 @@ def rule_based_predictions(row):
 
     fico = row['fico_avg']
     dti = row['dti']
-    int_rate = row['int_rate']
-    revol_util = row['revol_util']
-
+    loan_amt= row['loan_amnt']
 
     # Combine signals into a risk score
     # int_rate is the strongest signal from EDA
     # fico_avg is negative (higher fico = lower risk)
+    # loan amount is positive ( higher loan amt is risky)
 
-    risk_score = int_rate - (0.7 * fico) + (0.2 * dti)
+    risk_score =  - (0.9 * fico) + (0.2 * dti) + (0.1 * loan_amt)
 
     # Mapping risk score to grades
-    if risk_score < -0.8:
+    if risk_score < -0.85:
         return 0
-    elif risk_score < 0.1:
+    elif risk_score < -0.05:
         return 1
-    elif risk_score < 0.7:
+    elif risk_score < 0.9:
         return 2
-    elif risk_score < 1.2:
+    elif risk_score < 1.25:
         return 3
     elif risk_score < 1.6:
         return 4

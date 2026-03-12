@@ -28,20 +28,20 @@ def rule_based_predictions(row):
     # int_rate is the strongest signal from EDA
     # fico_avg is negative (higher fico = lower risk)
 
-    risk_score = int_rate - (0.5*fico) + (0.3*dti)
+    risk_score = int_rate - (0.7 * fico) + (0.2 * dti)
 
     # Mapping risk score to grades
-    if risk_score < -1.0:
+    if risk_score < -0.8:
         return 0
-    elif risk_score < -0.3:
+    elif risk_score < 0.1:
         return 1
-    elif risk_score < 0.3:
+    elif risk_score < 0.7:
         return 2
-    elif risk_score < 0.8:
+    elif risk_score < 1.2:
         return 3
-    elif risk_score < 1.3:
+    elif risk_score < 1.6:
         return 4
-    elif risk_score < 1.8:
+    elif risk_score < 2.2:
         return 5
     else:
         return 6

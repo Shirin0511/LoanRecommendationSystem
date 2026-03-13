@@ -15,7 +15,7 @@ print(f" Data loaded: {df.shape}")
 
 # 1. Selecting relevant features
 features=[
-    'loan_amnt', 'term', 'int_rate', 'annual_inc', 'purpose',
+    'loan_amnt', 'term', 'annual_inc', 'purpose',
     'dti', 'fico_range_low', 'fico_range_high', 'open_acc',
     'revol_bal', 'revol_util', 'total_acc', 'home_ownership',
     'emp_length', 'grade'
@@ -70,7 +70,7 @@ df_new['emp_length'] = pd.to_numeric(df_new['emp_length'], errors='coerce')
 df_new['emp_length'].fillna(df_new['emp_length'].median(), inplace=True)
 
 print("Column Values after Cleaning:")
-print(df_new[['int_rate','term','emp_length']].head())
+print(df_new[['term','emp_length']].head())
 
 # 5. Handling Outliers
 

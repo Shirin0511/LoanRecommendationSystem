@@ -51,7 +51,7 @@ model = XGBClassifier(
 
 model.fit(
     X_train, y_train,
-    sample_weight = sample_weights,
+    # sample_weight = sample_weights,
     eval_set=[(X_test, y_test)],
     verbose = 50
 )
@@ -66,3 +66,60 @@ accuracy = accuracy_score(y_test, y_pred)
 print(f" XGBoost Accuracy: {accuracy:.4f} ({accuracy*100:.2f}%)")
 print(f"Baseline Accuracy: 35.00%")
 print(f"Improvement: +{(accuracy*100 - 35.00):.2f}%")
+
+grade_mapping = {0:'A', 1:'B', 2:'C', 3:'D', 4:'E', 5:'F', 6:'G'}
+
+print("--------Classification Report---------")
+
+print(classification_report(
+    y_test, y_pred,
+    target_names= ['A','B','C','D','E','F','G'],
+    zero_division= 0
+))
+
+# 4. Confusion Matrix
+
+plt.figure(figsize=(10,8))
+cm= confusion_matrix(y_test,y_pred)
+sns.heatmap(cm, annot=True,fmt='d', cmap='Blues',
+            xticklabels=['A','B','C','D','E','F','G'],
+            yticklabels=['A','B','C','D','E','F','G'])
+
+plt.title('Confusion Matrix for PRedicted Grade vs Actual Grade')
+plt.ylabel('Actual Grade')
+plt.xlabel('Predicted Grade')
+plt.tight_layout()
+plt.savefig('src/plots/confusion_matrix.png')
+plt.show()
+
+# 5. Feature Importance
+
+plt.figure(figsize=(10,8))
+importance = pd.Series(model.feature_importances_, index = X_train.columns)
+importance.sort_values(ascending=True).tail(15).plot(kind="barh", color='steelblue')
+plt.title('XGBoost Feature Importance')
+plt.xlabel("Importance Score")
+plt.tight_layout()
+plt.savefig('src/plots/importance_plot.png')
+plt.show()
+
+print("10 Most Important Features")
+print(importance.sort_values(ascending=False).head(10))
+
+
+# 6. SHAP Explanability
+
+explainer = shap.TreeExplainer(model)
+model_shap_values = explainer.shap_values(X_test[:500])
+
+plt.figure()
+shap.summary_plot(model_shap_values, X_test[:500],
+                  class_names = ['A','B','C','D','E','F','G'],
+                  show=False)
+
+plt.tight_layout()
+plt.savefig('src/plots/shap_plot.png')
+plt.show()
+
+print("SHAP Plots Saved")
+

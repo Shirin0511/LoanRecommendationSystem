@@ -60,3 +60,6 @@ print("Model Trained")
 y_pred = model.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 
+print(f" XGBoost Accuracy: {accuracy:.4f} ({accuracy*100:.2f}%)")
+print(f"Baseline Accuracy: 35.00%")
+print(f"Improvement: +{(accuracy*100 - 35.00):.2f}%")

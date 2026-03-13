@@ -18,6 +18,9 @@ print(f"X_train shape: {X_train.shape}")
 print(f"X_test shape: {X_test.shape}")
 
 
+print(X_train.columns.to_list())
+
+
 # 1. Handling Class Imbalance from Class Weights
 
 class_counts = y_train.value_counts().sort_index()

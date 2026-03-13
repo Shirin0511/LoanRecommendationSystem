@@ -27,7 +27,7 @@ class_counts = y_train.value_counts().sort_index()
 
 total = len(y_train)
 
-class_weights = {i: total / (len(class_counts) * count)
+class_weights = {i: min(total / (len(class_counts) * count),10.0)
                  for i, count in class_counts.items()} 
 
 sample_weights = y_train.map(class_weights)
@@ -51,7 +51,7 @@ model = XGBClassifier(
 
 model.fit(
     X_train, y_train,
-    # sample_weight = sample_weights,
+    sample_weight = sample_weights,
     eval_set=[(X_test, y_test)],
     verbose = 50
 )
@@ -112,9 +112,10 @@ print(importance.sort_values(ascending=False).head(10))
 explainer = shap.TreeExplainer(model)
 model_shap_values = explainer.shap_values(X_test[:500])
 
+
 plt.figure()
-shap.summary_plot(model_shap_values, X_test[:500],
-                  class_names = ['A','B','C','D','E','F','G'],
+shap.summary_plot(model_shap_values[1], X_test[:500],
+                  feature_names= X_train.columns.to_list(),
                   show=False)
 
 plt.tight_layout()

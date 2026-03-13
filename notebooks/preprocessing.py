@@ -9,7 +9,7 @@ df = pd.read_csv(
     'data/accepted_2007_to_2018Q4.csv.gz',
     compression='gzip',
     low_memory=False,
-    nrows=100000
+    nrows=500000
 )
 print(f" Data loaded: {df.shape}")
 
@@ -91,7 +91,7 @@ purpose_counts = df_new['purpose'].value_counts()
 rare_purpose = purpose_counts[purpose_counts<1000].index
 
 df_new['purpose'] = df_new['purpose'].apply(
-    lambda x: 'others' if x in rare_purpose else x
+    lambda x: 'other' if x in rare_purpose else x
 )
 
 print(f"Purpose after rare encoding: {df_new['purpose'].value_counts()}")

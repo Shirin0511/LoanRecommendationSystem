@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.utils.class_weight import compute_sample_weight
 import shap
 
 
@@ -23,14 +24,16 @@ print(X_train.columns.to_list())
 
 # 1. Handling Class Imbalance from Class Weights
 
-class_counts = y_train.value_counts().sort_index()
+# class_counts = y_train.value_counts().sort_index()
 
-total = len(y_train)
+# total = len(y_train)
 
-class_weights = {i: min(total / (len(class_counts) * count),10.0)
-                 for i, count in class_counts.items()} 
+# class_weights = {i: min(total / (len(class_counts) * count),10.0)
+#                  for i, count in class_counts.items()} 
 
-sample_weights = y_train.map(class_weights)
+# sample_weights = y_train.map(class_weights)
+
+sample_weights= compute_sample_weight(class_weight='balanced', y=y_train)
 
 
 # 2. Building XGBoost
@@ -38,9 +41,9 @@ sample_weights = y_train.map(class_weights)
 print("-----Training XGBoost-----")
 
 model = XGBClassifier(
-    n_estimators = 300,
-    max_depth = 6,
-    learning_rate = 0.1,
+    n_estimators = 500,
+    max_depth = 8,
+    learning_rate = 0.05,
     subsample= 0.8,
     colsample_bytree = 0.8,
     use_label_encoder = False,
@@ -112,9 +115,15 @@ print(importance.sort_values(ascending=False).head(10))
 explainer = shap.TreeExplainer(model)
 model_shap_values = explainer.shap_values(X_test[:500])
 
+if isinstance(model_shap_values, list):
+    shap_to_plot= model_shap_values[1]
+
+else:
+    shap_to_plot = model_shap_values[:, :, 1]    
+
 
 plt.figure()
-shap.summary_plot(model_shap_values[1], X_test[:500],
+shap.summary_plot(shap_to_plot, X_test[:500],
                   feature_names= X_train.columns.to_list(),
                   show=False)
 

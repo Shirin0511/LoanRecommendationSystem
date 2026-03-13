@@ -30,5 +30,33 @@ class_weights = {i: total / (len(class_counts) * count)
 sample_weights = y_train.map(class_weights)
 
 
+# 2. Building XGBoost
 
+print("-----Training XGBoost-----")
+
+model = XGBClassifier(
+    n_estimators = 300,
+    max_depth = 6,
+    learning_rate = 0.1,
+    subsample= 0.8,
+    colsample_bytree = 0.8,
+    use_label_encoder = False,
+    eval_metric = 'mlogloss',
+    random_state = 42,
+    n_jobs= -1
+)
+
+model.fit(
+    X_train, y_train,
+    sample_weight = sample_weights,
+    eval_set=[(X_test, y_test)],
+    verbose = 50
+)
+
+print("Model Trained")
+
+# 3. Evaluating Model 
+
+y_pred = model.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
 

@@ -9,7 +9,7 @@ df = pd.read_csv(
     'data/accepted_2007_to_2018Q4.csv.gz',
     compression='gzip',
     low_memory=False,
-    nrows=5 00000
+    nrows=100000
 )
 print(f" Data loaded: {df.shape}")
 
@@ -63,6 +63,9 @@ print(df_new.isnull().sum())
 
 # Changing the term to remove the months keyword from it and keeping only numeric value
 df_new['term'] = df_new['term'].astype(str).str.extract(r'(\d+)').astype(int)
+df_new['term'] = pd.to_numeric(df_new['term'], errors='coerce')
+df_new['term'] = df_new['term'].fillna(df_new['term'].mode()[0])
+df_new['term'] = df_new['term'].astype(int)
 
 # Extracting only the numeric part from emp_length
 df_new['emp_length'] = df_new['emp_length'].astype(str).str.extract(r'(\d+)')

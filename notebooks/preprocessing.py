@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 
 # Data Loading
@@ -15,7 +15,7 @@ print(f" Data loaded: {df.shape}")
 
 # 1. Selecting relevant features
 features=[
-    'loan_amnt', 'annual_inc', 'purpose',
+    'loan_amnt', 'term',  'annual_inc', 'purpose',
     'dti', 'fico_range_low', 'fico_range_high', 'open_acc',
     'revol_bal', 'revol_util', 'total_acc', 'home_ownership',
     'emp_length', 'grade'
@@ -62,7 +62,7 @@ print(df_new.isnull().sum())
 #df_new['int_rate']= df_new['int_rate'].astype(str).str.replace('%','').astype(float)  # commented as this is turing into data leakage
 
 # Changing the term to remove the months keyword from it and keeping only numeric value
-#df_new['term'] = df_new['term'].astype(str).str.extract(r'(\d+)').astype(int)
+df_new['term'] = df_new['term'].astype(str).str.extract(r'(\d+)').astype(int)
 
 # Extracting only the numeric part from emp_length
 df_new['emp_length'] = df_new['emp_length'].astype(str).str.extract(r'(\d+)')
@@ -98,7 +98,7 @@ print(f"Purpose after rare encoding: {df_new['purpose'].value_counts()}")
 
 # 7. One Hot Encoding for Categorical Features & Label Encoding for Target 
 
-cat_cols = ['purpose','home_ownership']
+cat_cols = ['purpose','home_ownership', 'term']
 df_new = pd.get_dummies(df_new, columns=cat_cols, drop_first=True)
 
 

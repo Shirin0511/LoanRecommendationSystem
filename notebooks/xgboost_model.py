@@ -33,7 +33,7 @@ print(X_train.columns.to_list())
 
 # sample_weights = y_train.map(class_weights)
 
-sample_weights= compute_sample_weight(class_weight='balanced', y=y_train)
+# sample_weights= compute_sample_weight(class_weight='balanced', y=y_train)
 
 
 # 2. Building XGBoost
@@ -46,6 +46,8 @@ model = XGBClassifier(
     learning_rate = 0.05,
     subsample= 0.8,
     colsample_bytree = 0.8,
+    min_child_weight=3,
+    gamma=0.1,
     use_label_encoder = False,
     eval_metric = 'mlogloss',
     random_state = 42,
@@ -54,7 +56,7 @@ model = XGBClassifier(
 
 model.fit(
     X_train, y_train,
-    sample_weight = sample_weights,
+    #sample_weight = sample_weights,
     eval_set=[(X_test, y_test)],
     verbose = 50
 )
@@ -66,17 +68,19 @@ print("Model Trained")
 y_pred = model.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 
-print(f" XGBoost Accuracy: {accuracy:.4f} ({accuracy*100:.2f}%)")
+print(f" XGBoost Accuracy: {accuracy*100:.2f}%")
 print(f"Baseline Accuracy: 35.00%")
 print(f"Improvement: +{(accuracy*100 - 35.00):.2f}%")
 
-grade_mapping = {0:'A', 1:'B', 2:'C', 3:'D', 4:'E', 5:'F', 6:'G'}
+#grade_mapping = {0:'A', 1:'B', 2:'C', 3:'D', 4:'E', 5:'F', 6:'G'}
+
+risk_mapping = {0: 'Low Risk', 1: 'Medium Risk', 2: 'High Risk'}
 
 print("--------Classification Report---------")
 
 print(classification_report(
     y_test, y_pred,
-    target_names= ['A','B','C','D','E','F','G'],
+    target_names= ['Low Risk', 'Medium Risk', 'High Risk'],
     zero_division= 0
 ))
 
@@ -85,10 +89,10 @@ print(classification_report(
 plt.figure(figsize=(10,8))
 cm= confusion_matrix(y_test,y_pred)
 sns.heatmap(cm, annot=True,fmt='d', cmap='Blues',
-            xticklabels=['A','B','C','D','E','F','G'],
-            yticklabels=['A','B','C','D','E','F','G'])
+            xticklabels=['Low Risk', 'Medium Risk', 'High Risk'],
+            yticklabels=['Low Risk', 'Medium Risk', 'High Risk'])
 
-plt.title('Confusion Matrix for PRedicted Grade vs Actual Grade')
+plt.title('Confusion Matrix for Predicted Grade vs Actual Grade')
 plt.ylabel('Actual Grade')
 plt.xlabel('Predicted Grade')
 plt.tight_layout()
@@ -127,6 +131,7 @@ shap.summary_plot(shap_to_plot, X_test[:500],
                   feature_names= X_train.columns.to_list(),
                   show=False)
 
+plt.title('SHAP Values - Medium Risk Class')
 plt.tight_layout()
 plt.savefig('src/plots/shap_plot.png')
 plt.show()

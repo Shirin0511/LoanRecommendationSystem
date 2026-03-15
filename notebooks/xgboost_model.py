@@ -33,7 +33,7 @@ print(X_train.columns.to_list())
 
 # sample_weights = y_train.map(class_weights)
 
-# sample_weights= compute_sample_weight(class_weight='balanced', y=y_train)
+sample_weights= compute_sample_weight(class_weight={0:1, 1:1, 2:3}, y=y_train)
 
 
 # 2. Building XGBoost
@@ -56,7 +56,7 @@ model = XGBClassifier(
 
 model.fit(
     X_train, y_train,
-    #sample_weight = sample_weights,
+    sample_weight = sample_weights,
     eval_set=[(X_test, y_test)],
     verbose = 50
 )

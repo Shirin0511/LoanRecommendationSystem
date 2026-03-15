@@ -9,7 +9,7 @@ df = pd.read_csv(
     'data/accepted_2007_to_2018Q4.csv.gz',
     compression='gzip',
     low_memory=False,
-    nrows=500000
+    nrows=5 00000
 )
 print(f" Data loaded: {df.shape}")
 
@@ -101,8 +101,18 @@ print(f"Purpose after rare encoding: {df_new['purpose'].value_counts()}")
 cat_cols = ['purpose','home_ownership']
 df_new = pd.get_dummies(df_new, columns=cat_cols, drop_first=True)
 
-le = LabelEncoder()
-df_new['encoded_grade'] = le.fit_transform(df_new['grade'])
+
+def grade_to_tier_mapping(grade):
+    if grade in ['A','B']:  # Low Risk
+        return 0
+    elif grade in ['C','D']:  # Medium Risk
+        return 1
+    else:
+        return 2 # High Risk
+    
+df_new['encoded_grade'] = df_new['grade'].apply(grade_to_tier_mapping)
+
+print(f'Risk Tier Distribution: {df_new['encoded_grade'].value_counts().sort_index()}')
 
 print(f'Shape after Encoding: {df_new.shape}')
 

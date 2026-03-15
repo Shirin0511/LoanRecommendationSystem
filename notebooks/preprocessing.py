@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
+import joblib
 
 # Data Loading
 
@@ -129,6 +130,9 @@ ss= StandardScaler()
 df_new[num_features] = ss.fit_transform(df_new[num_features]) 
 
 
+joblib.dump(ss,'data/scaler.pkl')
+print('Scaler Saved')
+
 # 9. Applying Train Test Split
 
 X = df_new.drop(['grade','encoded_grade'], axis=1)
@@ -144,3 +148,7 @@ X_train.to_csv('data/X_train.csv', index=False)
 X_test.to_csv('data/X_test.csv', index=False)
 y_train.to_csv('data/y_train.csv', index=False)
 y_test.to_csv('data/y_test.csv', index=False)
+
+feature_col= X.columns.tolist()
+joblib.dump(feature_col, 'data/feature_cols.pkl')
+print('Features Saved!')

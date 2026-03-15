@@ -6,6 +6,7 @@ from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.utils.class_weight import compute_sample_weight
 import shap
+import joblib
 
 
 # Loading Processed Data
@@ -137,4 +138,10 @@ plt.savefig('src/plots/shap_plot.png')
 plt.show()
 
 print("SHAP Plots Saved")
+
+
+joblib.dump(model, 'data/xgboost_model.pkl')
+print("Model Saved")
+
+
 

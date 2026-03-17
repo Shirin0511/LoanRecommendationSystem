@@ -5,7 +5,7 @@ import joblib
 # Loading Saved Model, Scaler and Feature Columns
 model = joblib.load('data/xgboost_model.pkl')
 scaler = joblib.load('data/scaler.pkl')
-feature_cols = joblib.load('data/feature_col.pkl')
+feature_cols = joblib.load('data/feature_cols.pkl')
 
 # Risk Mapping
 
@@ -50,7 +50,7 @@ def build_scenario(customer, loan_amnt, term):
         row[purpose] = 1
 
 
-    ownership_type = f"home_ownership_{customer['home_ownership_']}"    
+    ownership_type = f"home_ownership_{customer['home_ownership']}"    
     if ownership_type in row:
         row[ownership_type] = 1
 
@@ -70,7 +70,7 @@ def scale_scenario(df):
 def predict_risk(customer, loan_amnt, term):
 
     scenario = build_scenario(customer, loan_amnt, term)
-    scaled_scenario = scaled_scenario(scenario)
+    scaled_scenario = scale_scenario(scenario)
     prediction = model.predict(scaled_scenario)[0]
     prob = model.predict_proba(scaled_scenario)[0]
     return prediction, prob
@@ -98,7 +98,7 @@ def recommender(customer):
                 'term' : term,
                 'risk' : risk,
                 'risk_tier' : risk_mapping[risk],
-                'probability' : f"{max(proba)*100:.1f}%"
+                'confidence' : f"{max(proba)*100:.1f}%"
             }
         )
 
@@ -121,7 +121,7 @@ def recommender(customer):
                     'term' : term,
                     'risk' : risk,
                     'risk_tier' : risk_mapping[risk],
-                    'probability' : f"{max(proba)*100:.1f}%"
+                    'confidence' : f"{max(proba)*100:.1f}%"
                     }
                 )
                     safer_category = True
@@ -146,5 +146,87 @@ def recommender(customer):
 
 
 
+def display_recommendation(customer, results, best):
 
+    print("\n" + "="*50)
+    print("   LOAN PARAMETER RECOMMENDATION SYSTEM")
+    print("="*50)
+
+    print(f"\nCustomer Profile:")
+    print(f"  FICO Score:     {customer['fico_avg']}")
+    print(f"  Annual Income:  ${customer['annual_inc']:,.0f}")
+    print(f"  DTI:            {customer['dti']}%")
+    print(f"  Loan Amount:    ${customer['loan_amnt']:,.0f}")
+    print(f"  Purpose:        {customer['purpose']}")
+    print(f"  Home Ownership: {customer['home_ownership']}")
+
+    print(f"\nScenario Analysis:")
+    print(f"  {'Loan Amount':<15} {'Term':<12} {'Risk Tier':<20} {'Confidence'}")
+    print(f"  {'-'*60}")
+    for r in results:
+        marker = " ← RECOMMENDED" if (
+            r['loan_amnt'] == best['loan_amnt'] and
+            r['term'] == best['term']
+        ) else ""
+        print(f"  ${r['loan_amnt']:<14,.0f} {r['term']} months{'':<4} "
+              f"{r['risk_tier']:<20} {r['confidence']}{marker}")
+
+    print(f"\n{'='*50}")
+    print(f"RECOMMENDATION:")
+    print(f"  Loan Amount: ${best['loan_amnt']:,.0f}")
+    print(f"  Term:        {best['term']} months")
+    print(f"  Risk Tier:   {best['risk_tier']}")
+    print(f"  Confidence:  {best['confidence']}")
+    print(f"{'='*50}\n")
+
+
+if __name__ == '__main__': 
+    # Customer 1 — Strong profile
+    customer1 = {
+        'fico_avg': 740,
+        'annual_inc': 80000,
+        'dti': 12,
+        'loan_amnt': 15000,
+        'revol_bal': 5000,
+        'revol_util': 20,
+        'total_acc': 15,
+        'emp_length': 8,
+        'purpose': 'debt_consolidation',
+        'home_ownership': 'MORTGAGE'
+    }
+
+    # Customer 2 — Weak profile
+    customer2 = {
+        'fico_avg': 660,
+        'annual_inc': 40000,
+        'dti': 28,
+        'loan_amnt': 25000,
+        'revol_bal': 12000,
+        'revol_util': 75,
+        'total_acc': 8,
+        'emp_length': 2,
+        'purpose': 'debt_consolidation',
+        'home_ownership': 'RENT'
+    }
+
+    # Customer 3 — Medium profile asking for high amount
+    customer3 = {
+        'fico_avg': 695,
+        'annual_inc': 55000,
+        'dti': 22,
+        'loan_amnt': 30000,
+        'revol_bal': 8000,
+        'revol_util': 45,
+        'total_acc': 11,
+        'emp_length': 5,
+        'purpose': 'home_improvement',
+        'home_ownership': 'RENT'
+    }
+
+    for i, customer in enumerate([customer1, customer2, customer3], 1):
+        print(f"\n{'#'*50}")
+        print(f"# CUSTOMER {i}")
+        print(f"{'#'*50}")
+        results, best = recommender(customer)
+        display_recommendation(customer, results, best)   
 

@@ -18,7 +18,7 @@ num_features = ['loan_amnt', 'annual_inc', 'dti',
 
 
 
-def build_scenario(customer, loan_amt, term):
+def build_scenario(customer, loan_amnt, term):
 
     """
     
@@ -30,7 +30,7 @@ def build_scenario(customer, loan_amt, term):
 
     # Fill numerical feature
 
-    row['loan_amt'] = loan_amt
+    row['loan_amnt'] = loan_amnt
     row['annual_inc'] = customer['annual_inc']
     row['dti'] = customer['dti']
     row['fico_avg'] = customer['fico_avg']
@@ -65,6 +65,84 @@ def scale_scenario(df):
     df_copy[num_features] = scaler.transform(df_copy[num_features])
     return df_copy
 
+
+
+def predict_risk(customer, loan_amnt, term):
+
+    scenario = build_scenario(customer, loan_amnt, term)
+    scaled_scenario = scaled_scenario(scenario)
+    prediction = model.predict(scaled_scenario)[0]
+    prob = model.predict_proba(scaled_scenario)[0]
+    return prediction, prob
+
+
+def recommender(customer):
+
+    """
+    Given a customer profile:
+    1. Try both terms with requested loan amount
+    2. If both High Risk — try lower amounts in $2500 steps
+    3. Return full scenario table and best recommendation
+    """
+
+    requested_amt = customer['loan_amnt']
+    terms = [36, 60]
+    results = []
+
+    # Step -1 Looping across both term values to find the risk related to each term
+    for term in terms:
+        risk, proba = predict_risk(customer, requested_amt, term)
+        results.append(
+            {
+                'loan_amnt' : requested_amt,
+                'term' : term,
+                'risk' : risk,
+                'risk_tier' : risk_mapping[risk],
+                'probability' : f"{max(proba)*100:.1f}%"
+            }
+        )
+
+
+    # Step- 2 if both are in high risk, then reducing loan amt
+
+    both_high_risk = all(r['risk_tier']==2 for r in results)
+
+    if both_high_risk:
+        safer_category = False
+        updated_amt = requested_amt - 2500
+
+        while updated_amt >= 2500 and not safer_category:
+            for term in terms:
+                risk, proba = predict_risk(customer, updated_amt, term)
+                if risk < 2:
+                    results.append(
+                    {
+                    'loan_amnt' : requested_amt,
+                    'term' : term,
+                    'risk' : risk,
+                    'risk_tier' : risk_mapping[risk],
+                    'probability' : f"{max(proba)*100:.1f}%"
+                    }
+                )
+                    safer_category = True
+            
+            
+            if not safer_category:    
+                updated_amt = updated_amt - 2500  
+
+
+    # Step-3 Finding best recommendation
+    # Priority: Low Risk > Medium Risk > High Risk
+    # Within same tier: prefer shorter term (36 months)
+    # Within same tier and term: prefer higher loan amount
+
+    sorted_results= sorted(results, key = lambda x: {
+        x['risk_tier'], x['term'], -x['loan_amnt']
+    })   
+
+
+    best = sorted_results[0]
+    return results, best
 
 
 

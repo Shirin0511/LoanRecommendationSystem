@@ -81,7 +81,7 @@ def recommender(customer):
     """
     Given a customer profile:
     1. Try both terms with requested loan amount
-    2. If both High Risk — try lower amounts in $2500 steps
+    2. If neither scenario is Low Risk, trigger lower amount search
     3. Return full scenario table and best recommendation
     """
 
@@ -97,38 +97,47 @@ def recommender(customer):
                 'loan_amnt' : requested_amt,
                 'term' : term,
                 'risk' : risk,
-                'risk_tier' : risk_mapping[risk],
+                'risk_category' : risk_mapping[risk],
                 'confidence' : f"{max(proba)*100:.1f}%"
             }
         )
 
 
-    # Step- 2 if both are in high risk, then reducing loan amt
+    # Step- 2 Trigger lower amount search if neither scenario is Low Risk
 
-    both_high_risk = all(r['risk_tier']==2 for r in results)
+    neither_low_risk = all(r['risk']>0 for r in results)
 
-    if both_high_risk:
-        safer_category = False
+    if neither_low_risk:
+        found_low_risk = False
+        best_alt= None
         updated_amt = requested_amt - 2500
 
-        while updated_amt >= 2500 and not safer_category:
+        while updated_amt >= 2500:
             for term in terms:
                 risk, proba = predict_risk(customer, updated_amt, term)
-                if risk < 2:
-                    results.append(
-                    {
-                    'loan_amnt' : requested_amt,
+                if best_alt is None or risk < best_alt['risk']:
+                    best_alt= {
+                    'loan_amnt' : updated_amt,
                     'term' : term,
                     'risk' : risk,
-                    'risk_tier' : risk_mapping[risk],
+                    'risk_category' : risk_mapping[risk],
                     'confidence' : f"{max(proba)*100:.1f}%"
                     }
-                )
-                    safer_category = True
+                            
             
-            
-            if not safer_category:    
-                updated_amt = updated_amt - 2500  
+                if risk == 0: # Found low risk
+                    results.append(best_alt)
+                    found_low_risk = True
+                    break
+
+            if found_low_risk:
+                break
+
+            updated_amt = updated_amt - 2500
+
+        # if low risk is never found, append the best alt found 
+        if not found_low_risk and best_alt is not None:
+            results.append(best_alt)    
 
 
     # Step-3 Finding best recommendation
@@ -137,7 +146,7 @@ def recommender(customer):
     # Within same tier and term: prefer higher loan amount
 
     sorted_results= sorted(results, key = lambda x: {
-        x['risk_tier'], x['term'], -x['loan_amnt']
+        x['risk'], x['term'], -x['loan_amnt']
     })   
 
 
@@ -169,13 +178,13 @@ def display_recommendation(customer, results, best):
             r['term'] == best['term']
         ) else ""
         print(f"  ${r['loan_amnt']:<14,.0f} {r['term']} months{'':<4} "
-              f"{r['risk_tier']:<20} {r['confidence']}{marker}")
+              f"{r['risk_category']:<20} {r['confidence']}{marker}")
 
     print(f"\n{'='*50}")
     print(f"RECOMMENDATION:")
     print(f"  Loan Amount: ${best['loan_amnt']:,.0f}")
     print(f"  Term:        {best['term']} months")
-    print(f"  Risk Tier:   {best['risk_tier']}")
+    print(f"  Risk Tier:   {best['risk_category']}")
     print(f"  Confidence:  {best['confidence']}")
     print(f"{'='*50}\n")
 

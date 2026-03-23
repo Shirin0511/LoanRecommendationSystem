@@ -172,22 +172,23 @@ def display_recommendation(customer, results, best):
     print(f"\nScenario Analysis:")
     print(f"  {'Loan Amount':<15} {'Term':<12} {'Risk Tier':<20} {'Confidence'}")
     print(f"  {'-'*60}")
-    for r in results:
-        marker = " ← RECOMMENDED" if (
-            r['loan_amnt'] == best['loan_amnt'] and
-            r['term'] == best['term']
-        ) else ""
+    best_idx = next(i for i, r in enumerate(results)
+                    if r['loan_amnt'] == best['loan_amnt']
+                    and r['term'] == best['term']
+                    and r['risk'] == best['risk'])
+
+    for idx, r in enumerate(results):
+        marker = " ← RECOMMENDED" if idx == best_idx else ""
         print(f"  ${r['loan_amnt']:<14,.0f} {r['term']} months{'':<4} "
-              f"{r['risk_category']:<20} {r['confidence']}{marker}")
+              f"{r['risk_tier']:<20} {r['confidence']}{marker}")
 
     print(f"\n{'='*50}")
     print(f"RECOMMENDATION:")
     print(f"  Loan Amount: ${best['loan_amnt']:,.0f}")
     print(f"  Term:        {best['term']} months")
-    print(f"  Risk Tier:   {best['risk_category']}")
+    print(f"  Risk Tier:   {best['risk_tier']}")
     print(f"  Confidence:  {best['confidence']}")
     print(f"{'='*50}\n")
-
 
 if __name__ == '__main__': 
     # Customer 1 — Strong profile

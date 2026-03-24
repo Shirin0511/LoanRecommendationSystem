@@ -145,9 +145,9 @@ def recommender(customer):
     # Within same tier: prefer shorter term (36 months)
     # Within same tier and term: prefer higher loan amount
 
-    sorted_results= sorted(results, key = lambda x: {
+    sorted_results= sorted(results, key = lambda x: (
         x['risk'], x['term'], -x['loan_amnt']
-    })   
+    ))   
 
 
     best = sorted_results[0]

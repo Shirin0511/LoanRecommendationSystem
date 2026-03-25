@@ -1,19 +1,25 @@
-# Loan Parameter Recommendation System
+# 🏦 Loan Parameter Recommendation System
 
-A machine learning powered recommendation system that predicts loan risk tiers and recommends optimal loan parameters for borrowers based on their financial profile.
+> A machine learning powered recommendation system that predicts loan risk tiers and recommends optimal loan parameters for borrowers based on their financial profile.
+
+![Python](https://img.shields.io/badge/Python-3.13-blue?style=flat-square&logo=python)
+![XGBoost](https://img.shields.io/badge/Model-XGBoost-orange?style=flat-square)
+![Accuracy](https://img.shields.io/badge/Accuracy-68%25-brightgreen?style=flat-square)
+![Dataset](https://img.shields.io/badge/Dataset-100K%20Records-purple?style=flat-square)
+![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)
 
 ---
 
-## Project Overview
+## 💡 Project Overview
 
-This project goes beyond simple loan grade prediction — it actively recommends the best loan term for a given customer profile by simulating multiple scenarios and identifying the option that minimises risk. Built on 100,000 real Lending Club loan records (2007–2018).
+This project goes beyond simple loan grade prediction — it actively **recommends the best loan term** for a given customer profile by simulating multiple scenarios and identifying the option that minimises risk. Built on **100,000 real Lending Club loan records** (2007–2018).
 
-**The core question this system answers:**
+### 🎯 The Core Question
 > *Given a customer's financial profile and desired loan amount, what loan term gives them the best risk outcome?*
 
 ---
 
-## Demo Output
+## 🖥️ Demo Output
 
 ```
 ==================================================
@@ -43,31 +49,31 @@ RECOMMENDATION:
 
 ---
 
-## Approach
+## 🔬 Approach
 
 Three approaches were built and compared:
 
 | Approach | Accuracy | Description |
 |---|---|---|
-| Rule-Based Baseline | 35% | Manual thresholds using FICO, DTI, loan amount |
-| XGBoost Classifier | 68% | ML model with class weights and hyperparameter tuning |
-| Recommendation Engine | — | XGBoost + scenario search across loan parameters |
+| 📏 Rule-Based Baseline | 35% | Manual thresholds using FICO, DTI, loan amount |
+| 🤖 XGBoost Classifier | **68%** | ML model with class weights and hyperparameter tuning |
+| 🎯 Recommendation Engine | — | XGBoost + scenario search across loan parameters |
 
-The XGBoost model achieves **68% accuracy** on 3-class risk prediction — nearly double the rule-based baseline — with no data leakage (interest rate excluded as it is assigned post-grade).
+The XGBoost model achieves **68% accuracy** on 3-class risk prediction — nearly **double** the rule-based baseline — with no data leakage (interest rate excluded as it is assigned post-grade).
 
 ---
 
-## Risk Tiers
+## 🚦 Risk Tiers
 
 | Tier | Lending Club Grades | Meaning |
 |---|---|---|
-| Low Risk | A, B | Strong credit profile |
-| Medium Risk | C, D | Moderate credit profile |
-| High Risk | E, F, G | Weak credit profile |
+| 🟢 Low Risk | A, B | Strong credit profile |
+| 🟡 Medium Risk | C, D | Moderate credit profile |
+| 🔴 High Risk | E, F, G | Weak credit profile |
 
 ---
 
-## Recommendation Logic
+## 🧠 Recommendation Logic
 
 ```
 Step 1 — Try both terms (36 and 60 months) at requested loan amount
@@ -78,24 +84,26 @@ Step 4 — If Low Risk never achievable, recommend best available option
 
 ---
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-- **Python 3.13**
-- **XGBoost** — primary classification model
-- **Scikit-learn** — preprocessing, train/test split, class weights
-- **SHAP** — model explainability
-- **Pandas / NumPy** — data manipulation
-- **Matplotlib / Seaborn** — visualisation
-- **Joblib** — model persistence
+| Tool | Purpose |
+|---|---|
+| 🐍 Python 3.13 | Core language |
+| ⚡ XGBoost | Primary classification model |
+| 🔧 Scikit-learn | Preprocessing, train/test split, class weights |
+| 🔍 SHAP | Model explainability |
+| 🐼 Pandas / NumPy | Data manipulation |
+| 📊 Matplotlib / Seaborn | Visualisation |
+| 💾 Joblib | Model persistence |
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 loan-recsys/
 │
-├── data/                          # Dataset and processed files (not tracked)
+├── 📂 data/                          # Dataset and processed files (not tracked)
 │   ├── accepted_2007_to_2018Q4.csv.gz
 │   ├── X_train.csv / X_test.csv
 │   ├── y_train.csv / y_test.csv
@@ -103,7 +111,7 @@ loan-recsys/
 │   ├── scaler.pkl
 │   └── feature_cols.pkl
 │
-├── notebooks/
+├── 📓 notebooks/
 │   ├── data_loading.py            # Step 1 — Load and inspect raw data
 │   ├── eda.py                     # Step 2 — Exploratory data analysis (8 plots)
 │   ├── preprocessing.py           # Step 3 — Feature engineering and cleaning
@@ -111,7 +119,7 @@ loan-recsys/
 │   ├── xgboost_model.py           # Step 5 — XGBoost training and evaluation
 │   └── recommender.py             # Step 6 — Recommendation engine
 │
-├── src/
+├── 📂 src/
 │   └── plots/                     # Generated EDA and model plots
 │
 ├── requirements.txt
@@ -120,12 +128,12 @@ loan-recsys/
 
 ---
 
-## Dataset
+## 📦 Dataset
 
 **Source:** [Lending Club Loan Data](https://www.kaggle.com/datasets/wordsforthewise/lending-club) via Kaggle
 
-- 100,000 loan records sampled from 2.2M total records (2007–2018)
-- 151 original features reduced to 12 after feature selection
+- 📋 100,000 loan records sampled from 2.2M total records (2007–2018)
+- 🔽 151 original features reduced to **12** after feature selection
 
 **Key features used:**
 
@@ -143,24 +151,25 @@ loan-recsys/
 | `purpose` | Loan purpose |
 | `term` | 36 or 60 months |
 
-**Note:** `int_rate` (interest rate) was deliberately excluded to prevent data leakage — interest rate is assigned after grade determination, not before.
+> ⚠️ **Note:** `int_rate` (interest rate) was deliberately excluded to prevent data leakage — interest rate is assigned *after* grade determination, not before.
 
 ---
 
-## EDA Highlights
+## 📊 EDA Highlights
 
-- Grade distribution is imbalanced — B and C dominate (~60%), G is <1%
-- FICO score shows strong negative correlation with risk tier
-- Loan amounts are right-skewed with spikes at round numbers ($10k, $15k, $20k)
-- Debt consolidation accounts for ~55% of all loan purposes
-- `loan_amnt` and `installment` are highly correlated (0.94) — `installment` dropped
-- DTI shows weak standalone relationship with grade but contributes in combination
+- 📉 Grade distribution is imbalanced — B and C dominate (~60%), G is <1%
+- 📈 FICO score shows **strong negative correlation** with risk tier
+- 💰 Loan amounts are right-skewed with spikes at round numbers ($10k, $15k, $20k)
+- 🔄 Debt consolidation accounts for ~55% of all loan purposes
+- 🔗 `loan_amnt` and `installment` are highly correlated (0.94) — `installment` dropped
+- 📌 DTI shows weak standalone relationship with grade but contributes in combination
 
 ---
 
-## Model Details
+## ⚙️ Model Details
 
 **XGBoost Hyperparameters:**
+
 ```python
 XGBClassifier(
     n_estimators=500,
@@ -174,6 +183,7 @@ XGBClassifier(
 ```
 
 **Class Imbalance Handling:**
+
 ```python
 sample_weights = compute_sample_weight(
     class_weight={0: 1, 1: 1, 2: 3},  # 3x weight for High Risk
@@ -181,7 +191,8 @@ sample_weights = compute_sample_weight(
 )
 ```
 
-**Classification Report:**
+**📋 Classification Report:**
+
 ```
               precision    recall  f1-score   support
     Low Risk       0.76      0.79      0.77      9653
@@ -192,18 +203,20 @@ sample_weights = compute_sample_weight(
 
 ---
 
-## SHAP Explainability
+## 🔍 SHAP Explainability
 
 SHAP (SHapley Additive exPlanations) was used to validate that model decisions align with domain knowledge:
 
-- `fico_avg` — high FICO pushes away from Medium/High Risk ✅
-- `term_60` — 60 month term increases risk probability ✅
-- `loan_amnt` — higher loan amount increases risk ✅
-- `dti` — higher debt burden increases risk ✅
+| Feature | Impact |
+|---|---|
+| `fico_avg` | ✅ High FICO pushes away from Medium/High Risk |
+| `term_60` | ✅ 60-month term increases risk probability |
+| `loan_amnt` | ✅ Higher loan amount increases risk |
+| `dti` | ✅ Higher debt burden increases risk |
 
 ---
 
-## Setup and Installation
+## 🚀 Setup and Installation
 
 ```bash
 # Clone the repository
@@ -223,27 +236,39 @@ pip install -r requirements.txt
 
 ---
 
-## Running the Project
+## ▶️ Running the Project
 
 Run each step in order:
 
 ```bash
-python notebooks/data_loading.py      # Verify dataset loads correctly
-python notebooks/eda.py               # Generate EDA plots
-python notebooks/preprocessing.py    # Clean and prepare data
-python notebooks/baseline.py         # Run rule-based baseline
-python notebooks/xgboost_model.py    # Train and evaluate XGBoost
-python notebooks/recommender.py      # Run recommendation engine
+python notebooks/data_loading.py      # 📥 Verify dataset loads correctly
+python notebooks/eda.py               # 📊 Generate EDA plots
+python notebooks/preprocessing.py    # 🔧 Clean and prepare data
+python notebooks/baseline.py         # 📏 Run rule-based baseline
+python notebooks/xgboost_model.py    # 🤖 Train and evaluate XGBoost
+python notebooks/recommender.py      # 🎯 Run recommendation engine
 ```
 
 ---
 
-## Key Learnings
+## 💎 Key Learnings
 
-- **Data leakage prevention** — identifying and excluding post-loan features like `int_rate`
-- **Class imbalance handling** — using sample weights to improve High Risk recall from 24% to 50%
-- **Feature engineering** — deriving `fico_avg` from range columns, rare label encoding for purpose
-- **Model explainability** — using SHAP to validate business logic behind predictions
-- **Recommendation system design** — converting a classifier into a scenario-based recommender
+- 🛡️ **Data leakage prevention** — identifying and excluding post-loan features like `int_rate`
+- ⚖️ **Class imbalance handling** — using sample weights to improve High Risk recall from 24% to 50%
+- 🔨 **Feature engineering** — deriving `fico_avg` from range columns, rare label encoding for purpose
+- 🔍 **Model explainability** — using SHAP to validate business logic behind predictions
+- 🧩 **Recommendation system design** — converting a classifier into a scenario-based recommender
 
 ---
+
+## 👩‍💻 Author
+
+**Shirin Gupta**  
+MSc Artificial Intelligence — Queen's University Belfast
+
+[![GitHub](https://img.shields.io/badge/GitHub-Shirin0511-black?style=flat-square&logo=github)](https://github.com/Shirin0511)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-shirin--gupta-blue?style=flat-square&logo=linkedin)](https://linkedin.com/in/shirin-gupta)
+
+---
+
+<p align="center">Made with ❤️ using Python & XGBoost</p>

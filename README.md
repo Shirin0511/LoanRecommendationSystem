@@ -247,9 +247,3 @@ python notebooks/recommender.py      # Run recommendation engine
 - **Recommendation system design** — converting a classifier into a scenario-based recommender
 
 ---
-
-## Author
-
-**Shirin Gupta**
-MSc Artificial Intelligence — Queen's University Belfast
-[GitHub](https://github.com/Shirin0511) | [LinkedIn](https://linkedin.com/in/shirin-gupta)

@@ -1,13 +1,6 @@
 # 🏦 Loan Parameter Recommendation System
 
 > A machine learning powered recommendation system that predicts loan risk tiers and recommends optimal loan parameters for borrowers based on their financial profile.
-
-![Python](https://img.shields.io/badge/Python-3.13-blue?style=flat-square&logo=python)
-![XGBoost](https://img.shields.io/badge/Model-XGBoost-orange?style=flat-square)
-![Accuracy](https://img.shields.io/badge/Accuracy-68%25-brightgreen?style=flat-square)
-![Dataset](https://img.shields.io/badge/Dataset-100K%20Records-purple?style=flat-square)
-![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)
-
 ---
 
 ## 💡 Project Overview
@@ -270,5 +263,3 @@ MSc Artificial Intelligence — Queen's University Belfast
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-shirin--gupta-blue?style=flat-square&logo=linkedin)](https://linkedin.com/in/shirin-gupta)
 
 ---
-
-<p align="center">Made with ❤️ using Python & XGBoost</p>
